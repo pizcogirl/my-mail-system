@@ -29,8 +29,7 @@ public class MailClient
     public MailItem getNextMailItem()
     {
         // Devuelve el siguiente email en el servidor
-        MailItem email = server.getNextMailItem(user);
-        return email;
+        return server.getNextMailItem(user);
     }
 
     /**
