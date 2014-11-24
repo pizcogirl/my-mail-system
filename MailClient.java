@@ -42,7 +42,7 @@ public class MailClient
         if (server.howManyMailItems(user) > 0)
         {
             MailItem email = server.getNextMailItem(user);
-            email.printNextEmail();
+            email.printEmail();
         }
         else
         {

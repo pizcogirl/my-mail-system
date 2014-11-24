@@ -15,8 +15,8 @@ public class MailItem
     private String to;
 
     /**
-     * Escribe la direccion a la que envia el email y
-     * el texto a enviar.
+     * Escribe la direccion a la que envia el email, quien
+     * lo envia y el texto a enviar.
      */
     public MailItem(String fromMail, String toMail, String text)
     {
@@ -29,9 +29,9 @@ public class MailItem
     /**
      * Imprime el mensaje por pantalla
      */
-    public void printNextEmail()
+    public void printEmail()
     {
-        // Imprime por pantalla el siguiente email
+        // Imprime por pantalla el email
         System.out.println("De: " + from);
         System.out.println("Para: " + to);
         System.out.println(message);
