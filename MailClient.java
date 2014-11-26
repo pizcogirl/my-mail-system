@@ -51,8 +51,8 @@ public class MailClient
     }
 
     /**
-     * Envia un mensaje a otro usuario de email. Introduce el destinatario
-     * y el cuerpo del mensaje
+     * Envia un mensaje a otro usuario de email. Introduce el destinatario,
+     * el asunto y el cuerpo del mensaje
      */
     public void sendMailItem (String toMail, String newSubject, String text)
     {

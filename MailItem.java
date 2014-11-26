@@ -18,7 +18,7 @@ public class MailItem
 
     /**
      * Escribe la direccion a la que envia el email, quien
-     * lo envia y el texto a enviar.
+     * lo envia, el asunto y el texto a enviar.
      */
     public MailItem(String from, String to, String subject, String message)
     {
