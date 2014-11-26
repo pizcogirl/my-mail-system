@@ -61,7 +61,7 @@ public class MailClient
         // Envia el mensaje al servidor
         server.post(email);
     }
-    
+
     /**
      * Muestra por pantalla cuantos emails sin leer tiene el cliente
      */
@@ -70,7 +70,7 @@ public class MailClient
         int numEmail = server.howManyMailItems(user);
         System.out.println("Tiene " + numEmail + " mensajes nuevos");
     }
-    
+
     /**
      * Devuelve el siguiente email en el servidor y lo contesta automaticamente
      * con un mensaje indicando que estamos de vacaciones
@@ -79,7 +79,7 @@ public class MailClient
     {
         MailItem tempMail = server.getNextMailItem(user);
         String tempSubject = ("RE: " + tempMail.getSubject());
-        String tempMessage = (tempMail.getMessage() + " Estoy de vacaciones");
+        String tempMessage = (tempMail.getMessage() + "\nEstoy de vacaciones");
         sendMailItem (tempMail.getFrom(), tempSubject, tempMessage);
     }
 }
