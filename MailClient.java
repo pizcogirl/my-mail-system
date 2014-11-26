@@ -61,4 +61,13 @@ public class MailClient
         // Envia el mensaje al servidor
         server.post(email);
     }
+    
+    /**
+     * Muestra por pantalla cuantos emails sin leer tiene el cliente
+     */
+    public void howManyMailItems()
+    {
+        int numEmail = server.howManyMailItems(user);
+        System.out.println("Tiene " + numEmail + " mensajes nuevos");
+    }
 }
