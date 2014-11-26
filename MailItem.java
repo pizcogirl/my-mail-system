@@ -1,6 +1,6 @@
 
 /**
- * Write a description of class MailItem here.
+ * Esta clase representa un mensaje de email
  * 
  * @author (your name) 
  * @version (a version number or a date)
@@ -18,12 +18,12 @@ public class MailItem
      * Escribe la direccion a la que envia el email, quien
      * lo envia y el texto a enviar.
      */
-    public MailItem(String fromMail, String toMail, String text)
+    public MailItem(String from, String to, String message)
     {
         // Inicializa las variables con los parametros introducidos
-        from = fromMail;
-        to = toMail;
-        message = text;
+        this.from = from;
+        this.to = to;
+        this.message = message;
     }
 
     /**
