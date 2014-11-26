@@ -70,4 +70,16 @@ public class MailClient
         int numEmail = server.howManyMailItems(user);
         System.out.println("Tiene " + numEmail + " mensajes nuevos");
     }
+    
+    /**
+     * Devuelve el siguiente email en el servidor y lo contesta automaticamente
+     * con un mensaje indicando que estamos de vacaciones
+     */
+    public void getNextMailItemAndAutorespond()
+    {
+        MailItem tempMail = server.getNextMailItem(user);
+        String tempSubject = ("RE: " + tempMail.getSubject());
+        String tempMessage = (tempMail.getMessage() + " Estoy de vacaciones");
+        sendMailItem (tempMail.getFrom(), tempSubject, tempMessage);
+    }
 }
