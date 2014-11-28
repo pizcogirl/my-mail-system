@@ -232,7 +232,7 @@ public class MailClient
      * Muestra por pantalla el ultimo email de spam devuelto desde 
      * el servidor. Si no hay ningun mensaje, avisa de ello.
      */
-    public void printLastMailItem()
+    public void printLastSpamItem()
     {
         // Si hay algun email guardado, lo imprime por pantalla
         // sino avisa de ello
@@ -245,4 +245,22 @@ public class MailClient
             System.out.println ("No hay mensajes de spam almacenados");
         }
     }
+    
+   
+     /**
+      * Envia al servidor un mensaje con errores por problemas de transmisión
+      */ 
+     
+      public void sendMailItemWithTransmissionError(String toMail, String newSubject, String text)
+      {
+          // Simula errores de transmisión
+          text = text.replace("a", "#&");
+          text = text.replace("e", "$#");
+          // Crea el email con los parametros introducidos y el user como emisor
+        MailItem email = new MailItem(user, toMail, newSubject, text);
+        // Envia el mensaje al servidor
+        sendMailCount = sendMailCount + 1;
+        server.post(email);
+    }
+    
 }
