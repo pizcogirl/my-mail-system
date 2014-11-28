@@ -11,6 +11,8 @@ public class MailClient
     private MailServer server;
     // Usuario del cliente de email
     private String user;
+    // Almacena el ultimo email recibido
+    private MailItem lastEmail;
 
     /**
      * Constructor del cliente de email, introduce el nombre
@@ -21,6 +23,7 @@ public class MailClient
         // Inicializa las variables mediante parametros
         this.user = user;
         this.server = server;
+        lastEmail = null;
     }
 
     /**
@@ -29,7 +32,8 @@ public class MailClient
     public MailItem getNextMailItem()
     {
         // Devuelve el siguiente email en el servidor
-        return server.getNextMailItem(user);
+        lastEmail = server.getNextMailItem(user);
+        return lastEmail;
     }
 
     /**
@@ -41,8 +45,8 @@ public class MailClient
         // si no hay ninguno imprime un mensaje avisandolo
         if (server.howManyMailItems(user) > 0)
         {
-            MailItem email = server.getNextMailItem(user);
-            email.printEmail();
+            lastEmail = server.getNextMailItem(user);
+            lastEmail.printEmail();
         }
         else
         {
@@ -63,7 +67,7 @@ public class MailClient
     }
 
     /**
-     * Muestra por pantalla cuantos emails sin leer tiene el cliente
+     * Muestra por pantalla cuantos emails sin leer tiene el usuario
      */
     public void howManyMailItems()
     {
@@ -77,9 +81,33 @@ public class MailClient
      */
     public void getNextMailItemAndAutorespond()
     {
+        // Devolvemos el siguiente email, almacenamos los strings a modificar en strings 
+        // temporales, y con los nuevos datos enviamos un mensaje automatico
         MailItem tempMail = server.getNextMailItem(user);
-        String tempSubject = ("RE: " + tempMail.getSubject());
-        String tempMessage = (tempMail.getMessage() + "\nEstoy de vacaciones");
-        sendMailItem (tempMail.getFrom(), tempSubject, tempMessage);
+        // Comprueba si hay mensaje al que responder
+        if (tempMail != null)
+        {
+            String tempSubject = ("RE: " + tempMail.getSubject());
+            String tempMessage = (tempMail.getMessage() + "\nEstoy de vacaciones");
+            sendMailItem (tempMail.getFrom(), tempSubject, tempMessage);
+        }
+    }
+    
+    /**
+     * Muestra por pantalla el ultimo email devuelto desde el servidor.
+     * Si no hay ningun mensaje, avisa de ello.
+     */
+    public void printLastMailItem()
+    {
+        // Si hay algun email guardado, lo imprime por pantalla
+        // sino avisa de ello
+        if (lastEmail != null)
+        {
+            lastEmail.printEmail();
+        }
+        else
+        {
+            System.out.println ("No hay mensajes almacenados");
+        }
     }
 }
