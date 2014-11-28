@@ -13,6 +13,16 @@ public class MailClient
     private String user;
     // Almacena el ultimo email recibido
     private MailItem lastEmail;
+    // Contador de email enviados
+    private int sendMailCount;
+    // Contador de email recibidos
+    private int receiveMailCount;
+    // Contador de email de spam recibidos
+    private int receiveSpamCount;
+    // Almacena la direccion de correo de quien nos ha enviado el correo más largo
+    private String longestFrom;
+    // Almacena la longitud del mensaje más largo recibido
+    private int longestMessage;
 
     /**
      * Constructor del cliente de email, introduce el nombre
@@ -24,6 +34,11 @@ public class MailClient
         this.user = user;
         this.server = server;
         lastEmail = null;
+        sendMailCount = 0;
+        receiveMailCount = 0;
+        receiveSpamCount = 0;
+        longestFrom = "";
+        longestMessage = 0;
     }
 
     /**
@@ -34,6 +49,11 @@ public class MailClient
         // Devuelve el siguiente email en el servidor
         lastEmail = server.getNextMailItem(user);
         String tempString = lastEmail.getMessage() + " " + lastEmail.getSubject();
+        checkFrom();
+        if (lastEmail != null)
+        {
+            receiveMailCount = receiveMailCount + 1;
+        }
         if (tempString.contains("viagra"))
         {
             if (tempString.contains("proyecto"))
@@ -43,6 +63,7 @@ public class MailClient
             else
             {
                 lastEmail = null;
+                receiveSpamCount = receiveSpamCount + 1;
             }
         }
         if (tempString.contains("oferta"))
@@ -54,6 +75,7 @@ public class MailClient
             else
             {
                 lastEmail = null;
+                receiveSpamCount = receiveSpamCount + 1;
             }
 
         }
@@ -71,7 +93,9 @@ public class MailClient
         // si no hay ninguno imprime un mensaje avisandolo
         if (server.howManyMailItems(user) > 0)
         {
+            receiveMailCount = receiveMailCount + 1;
             lastEmail = server.getNextMailItem(user);
+            checkFrom();
             String tempString = lastEmail.getMessage() + " " + lastEmail.getSubject();
             if (tempString.contains("viagra"))
             {
@@ -82,6 +106,7 @@ public class MailClient
                 else
                 {
                     System.out.println("El mensaje recibido es spam");
+                    receiveSpamCount = receiveSpamCount + 1;
                     lastEmail = null;
                 }
             }
@@ -94,6 +119,7 @@ public class MailClient
                 else
                 {
                     System.out.println("El mensaje recibido es spam");
+                    receiveSpamCount = receiveSpamCount + 1;
                     lastEmail = null;
                 }
 
@@ -118,6 +144,7 @@ public class MailClient
         // Crea el email con los parametros introducidos y el user como emisor
         MailItem email = new MailItem(user, toMail, newSubject, text);
         // Envia el mensaje al servidor
+        sendMailCount = sendMailCount + 1;
         server.post(email);
     }
 
@@ -163,6 +190,34 @@ public class MailClient
         else
         {
             System.out.println ("No hay mensajes almacenados");
+        }
+    }
+    
+    /**
+     * Muestra estadisticas referentes al uso del correo electronico
+     * numero de emails enviados, recibidos, porcentaje de recibidos
+     * que son spam y direccion de correo que nos ha enviado el mensaje
+     * más largo.
+     */
+    public void printStatistics()
+    {
+        // Imprime por pantalla todas las estadisticas
+        System.out.println ("Ha recibido " + receiveMailCount + " mensajes");
+        System.out.println ("De los cuales " + ((receiveSpamCount/receiveMailCount)*100) + "% eran spam");
+        System.out.println ("Ha enviado " + sendMailCount + " mensajes");
+        System.out.println ("La direccion de la persona que nos envio el mensaje más largo es " + longestFrom);
+    }
+    
+    /**
+     * Metodo para guardar la direccion de correo del mensaje más largo recibido
+     */
+    private void checkFrom()
+    {
+        String tempString = lastEmail.getMessage();
+        if (tempString.length() > longestMessage)
+        {
+            longestFrom = lastEmail.getFrom();
+            longestMessage = tempString.length();
         }
     }
 }
