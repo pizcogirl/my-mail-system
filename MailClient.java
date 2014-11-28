@@ -23,6 +23,8 @@ public class MailClient
     private String longestFrom;
     // Almacena la longitud del mensaje más largo recibido
     private int longestMessage;
+    // Almacena el ultimo email de spam recibido
+    private MailItem lastSpam;
 
     /**
      * Constructor del cliente de email, introduce el nombre
@@ -39,6 +41,7 @@ public class MailClient
         receivedSpamCount = 0;
         longestFrom = "";
         longestMessage = 0;
+        lastSpam = null;
     }
 
     /**
@@ -62,6 +65,7 @@ public class MailClient
             }
             else
             {
+                lastSpam = lastEmail;
                 lastEmail = null;
                 receivedSpamCount = receivedSpamCount + 1;
             }
@@ -74,6 +78,7 @@ public class MailClient
             }
             else
             {
+                 lastSpam = lastEmail;
                 lastEmail = null;
                 receivedSpamCount = receivedSpamCount + 1;
             }
@@ -107,6 +112,7 @@ public class MailClient
                 {
                     System.out.println("El mensaje recibido es spam");
                     receivedSpamCount = receivedSpamCount + 1;
+                    lastSpam = lastEmail;
                     lastEmail = null;
                 }
             }
@@ -120,6 +126,7 @@ public class MailClient
                 {
                     System.out.println("El mensaje recibido es spam");
                     receivedSpamCount = receivedSpamCount + 1;
+                    lastSpam = lastEmail;
                     lastEmail = null;
                 }
 
@@ -218,6 +225,24 @@ public class MailClient
         {
             longestFrom = lastEmail.getFrom();
             longestMessage = tempString.length();
+        }
+    }
+    
+     /**
+     * Muestra por pantalla el ultimo email de spam devuelto desde 
+     * el servidor. Si no hay ningun mensaje, avisa de ello.
+     */
+    public void printLastMailItem()
+    {
+        // Si hay algun email guardado, lo imprime por pantalla
+        // sino avisa de ello
+        if (lastSpam != null)
+        {
+            lastSpam.printEmail();
+        }
+        else
+        {
+            System.out.println ("No hay mensajes de spam almacenados");
         }
     }
 }
