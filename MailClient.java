@@ -16,9 +16,9 @@ public class MailClient
     // Contador de email enviados
     private int sendMailCount;
     // Contador de email recibidos
-    private int receiveMailCount;
+    private int receivedMailCount;
     // Contador de email de spam recibidos
-    private int receiveSpamCount;
+    private int receivedSpamCount;
     // Almacena la direccion de correo de quien nos ha enviado el correo más largo
     private String longestFrom;
     // Almacena la longitud del mensaje más largo recibido
@@ -35,8 +35,8 @@ public class MailClient
         this.server = server;
         lastEmail = null;
         sendMailCount = 0;
-        receiveMailCount = 0;
-        receiveSpamCount = 0;
+        receivedMailCount = 0;
+        receivedSpamCount = 0;
         longestFrom = "";
         longestMessage = 0;
     }
@@ -52,7 +52,7 @@ public class MailClient
         checkFrom();
         if (lastEmail != null)
         {
-            receiveMailCount = receiveMailCount + 1;
+            receivedMailCount = receivedMailCount + 1;
         }
         if (tempString.contains("viagra"))
         {
@@ -63,7 +63,7 @@ public class MailClient
             else
             {
                 lastEmail = null;
-                receiveSpamCount = receiveSpamCount + 1;
+                receivedSpamCount = receivedSpamCount + 1;
             }
         }
         if (tempString.contains("oferta"))
@@ -75,7 +75,7 @@ public class MailClient
             else
             {
                 lastEmail = null;
-                receiveSpamCount = receiveSpamCount + 1;
+                receivedSpamCount = receivedSpamCount + 1;
             }
 
         }
@@ -93,7 +93,7 @@ public class MailClient
         // si no hay ninguno imprime un mensaje avisandolo
         if (server.howManyMailItems(user) > 0)
         {
-            receiveMailCount = receiveMailCount + 1;
+            receivedMailCount = receivedMailCount + 1;
             lastEmail = server.getNextMailItem(user);
             checkFrom();
             String tempString = lastEmail.getMessage() + " " + lastEmail.getSubject();
@@ -106,7 +106,7 @@ public class MailClient
                 else
                 {
                     System.out.println("El mensaje recibido es spam");
-                    receiveSpamCount = receiveSpamCount + 1;
+                    receivedSpamCount = receivedSpamCount + 1;
                     lastEmail = null;
                 }
             }
@@ -119,7 +119,7 @@ public class MailClient
                 else
                 {
                     System.out.println("El mensaje recibido es spam");
-                    receiveSpamCount = receiveSpamCount + 1;
+                    receivedSpamCount = receivedSpamCount + 1;
                     lastEmail = null;
                 }
 
@@ -202,8 +202,8 @@ public class MailClient
     public void printStatistics()
     {
         // Imprime por pantalla todas las estadisticas
-        System.out.println ("Ha recibido " + receiveMailCount + " mensajes");
-        System.out.println ("De los cuales " + ((receiveSpamCount/receiveMailCount)*100) + "% eran spam");
+        System.out.println ("Ha recibido " + receivedMailCount + " mensajes");
+        System.out.println ("De los cuales " + ((receivedSpamCount/receivedMailCount)*100) + "% eran spam");
         System.out.println ("Ha enviado " + sendMailCount + " mensajes");
         System.out.println ("La direccion de la persona que nos envio el mensaje más largo es " + longestFrom);
     }
