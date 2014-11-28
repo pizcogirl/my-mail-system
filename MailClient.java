@@ -33,7 +33,33 @@ public class MailClient
     {
         // Devuelve el siguiente email en el servidor
         lastEmail = server.getNextMailItem(user);
+        String tempString = lastEmail.getMessage() + " " + lastEmail.getSubject();
+        if (tempString.contains("viagra"))
+        {
+            if (tempString.contains("proyecto"))
+            {
+                return lastEmail;
+            }
+            else
+            {
+                lastEmail = null;
+            }
+        }
+        if (tempString.contains("oferta"))
+        {
+            if (tempString.contains("proyecto"))
+            {
+                return lastEmail;
+            }
+            else
+            {
+                lastEmail = null;
+            }
+
+        }
+
         return lastEmail;
+
     }
 
     /**
@@ -46,7 +72,36 @@ public class MailClient
         if (server.howManyMailItems(user) > 0)
         {
             lastEmail = server.getNextMailItem(user);
-            lastEmail.printEmail();
+            String tempString = lastEmail.getMessage() + " " + lastEmail.getSubject();
+            if (tempString.contains("viagra"))
+            {
+                if (tempString.contains("proyecto"))
+                {
+                    lastEmail.printEmail();
+                }
+                else
+                {
+                    System.out.println("El mensaje recibido es spam");
+                    lastEmail = null;
+                }
+            }
+            if (tempString.contains("oferta"))
+            {
+                if (tempString.contains("proyecto"))
+                {
+                    lastEmail.printEmail();
+                }
+                else
+                {
+                    System.out.println("El mensaje recibido es spam");
+                    lastEmail = null;
+                }
+
+            }
+            else
+            {
+                lastEmail.printEmail();
+            }
         }
         else
         {
@@ -92,7 +147,7 @@ public class MailClient
             sendMailItem (tempMail.getFrom(), tempSubject, tempMessage);
         }
     }
-    
+
     /**
      * Muestra por pantalla el ultimo email devuelto desde el servidor.
      * Si no hay ningun mensaje, avisa de ello.
