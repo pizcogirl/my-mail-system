@@ -25,6 +25,8 @@ public class MailClient
     private int longestMessage;
     // Almacena el ultimo email de spam recibido
     private MailItem lastSpam;
+    // Boolean para recoger si el email ha sido marcado como spam o no
+    private boolean mailIsSpam;
 
     /**
      * Constructor del cliente de email, introduce el nombre
@@ -42,6 +44,7 @@ public class MailClient
         longestFrom = "";
         longestMessage = 0;
         lastSpam = null;
+        mailIsSpam = false;
     }
 
     /**
@@ -51,42 +54,25 @@ public class MailClient
     {
         // Devuelve el siguiente email en el servidor
         lastEmail = server.getNextMailItem(user);
-        String tempString = lastEmail.getMessage() + " " + lastEmail.getSubject();
-        checkFrom();
         if (lastEmail != null)
         {
+            // Comprueba si es el mensaje más largo recibido
+            checkFrom();
+            // Suma uno al contador de mensajes recibidos
             receivedMailCount = receivedMailCount + 1;
-        }
-        if (tempString.contains("viagra"))
-        {
-            if (tempString.contains("proyecto"))
+            // Comprueba si el mensaje es spam
+            checkSpam();
+
+            if (mailIsSpam)
             {
-                return lastEmail;
-            }
-            else
-            {
+                // Si el mensaje es spam nos devolvera null, suma uno a la estadistica
+                // de email de spam recibidos y lo guarda como spam
                 lastSpam = lastEmail;
                 lastEmail = null;
                 receivedSpamCount = receivedSpamCount + 1;
             }
         }
-        if (tempString.contains("oferta"))
-        {
-            if (tempString.contains("proyecto"))
-            {
-                return lastEmail;
-            }
-            else
-            {
-                 lastSpam = lastEmail;
-                lastEmail = null;
-                receivedSpamCount = receivedSpamCount + 1;
-            }
-
-        }
-
         return lastEmail;
-
     }
 
     /**
@@ -100,37 +86,21 @@ public class MailClient
         {
             receivedMailCount = receivedMailCount + 1;
             lastEmail = server.getNextMailItem(user);
+            // Comprueba si es el mensaje más largo recibido
             checkFrom();
-            String tempString = lastEmail.getMessage() + " " + lastEmail.getSubject();
-            if (tempString.contains("viagra"))
+            // Comprueba si el mensaje es spam
+            checkSpam();
+            if (mailIsSpam)
             {
-                if (tempString.contains("proyecto"))
-                {
-                    lastEmail.printEmail();
-                }
-                else
-                {
-                    System.out.println("El mensaje recibido es spam");
-                    receivedSpamCount = receivedSpamCount + 1;
-                    lastSpam = lastEmail;
-                    lastEmail = null;
-                }
+                // Si el mensaje es spam nos avisa de ello, suma uno a la estadistica
+                // de email de spam recibidos, lo guarda como spam y lo borra de lastEmail
+                System.out.println("El mensaje recibido es spam");
+                receivedSpamCount = receivedSpamCount + 1;
+                lastSpam = lastEmail;
+                lastEmail = null;
             }
-            if (tempString.contains("oferta"))
-            {
-                if (tempString.contains("proyecto"))
-                {
-                    lastEmail.printEmail();
-                }
-                else
-                {
-                    System.out.println("El mensaje recibido es spam");
-                    receivedSpamCount = receivedSpamCount + 1;
-                    lastSpam = lastEmail;
-                    lastEmail = null;
-                }
 
-            }
+       
             else
             {
                 lastEmail.printEmail();
@@ -148,11 +118,13 @@ public class MailClient
      */
     public void sendMailItem (String toMail, String newSubject, String text)
     {
+        // Cuenta la longitud del mensaje
+        int originalLength = text.length();
         // Crea el email con los parametros introducidos y el user como emisor
         MailItem email = new MailItem(user, toMail, newSubject, text);
-        // Envia el mensaje al servidor
+        // Envia el mensaje al servidor y suma uno a la estadistica de email enviados
         sendMailCount = sendMailCount + 1;
-        server.post(email);
+        server.post(email, originalLength);
     }
 
     /**
@@ -199,7 +171,7 @@ public class MailClient
             System.out.println ("No hay mensajes almacenados");
         }
     }
-    
+
     /**
      * Muestra estadisticas referentes al uso del correo electronico
      * numero de emails enviados, recibidos, porcentaje de recibidos
@@ -214,27 +186,32 @@ public class MailClient
         System.out.println ("Ha enviado " + sendMailCount + " mensajes");
         System.out.println ("La direccion de la persona que nos envio el mensaje más largo es " + longestFrom);
     }
-    
+
     /**
      * Metodo para guardar la direccion de correo del mensaje más largo recibido
      */
     private void checkFrom()
     {
+        // Guarda el mensaje del ultimo email recibido
         String tempString = lastEmail.getMessage();
+        // Comprueba la longitud del mensaje con la del mensaje más
+        // largo recibido hasta ahora
         if (tempString.length() > longestMessage)
         {
+            // Si es más largo el nuevo mensaje, guarda de quien es
+            // y su longitud en caracteres
             longestFrom = lastEmail.getFrom();
             longestMessage = tempString.length();
         }
     }
-    
-     /**
+
+    /**
      * Muestra por pantalla el ultimo email de spam devuelto desde 
      * el servidor. Si no hay ningun mensaje, avisa de ello.
      */
     public void printLastSpamItem()
     {
-        // Si hay algun email guardado, lo imprime por pantalla
+        // Si hay algun email de spam guardado, lo imprime por pantalla
         // sino avisa de ello
         if (lastSpam != null)
         {
@@ -245,22 +222,55 @@ public class MailClient
             System.out.println ("No hay mensajes de spam almacenados");
         }
     }
-    
-   
-     /**
-      * Envia al servidor un mensaje con errores por problemas de transmisión
-      */ 
-     
-      public void sendMailItemWithTransmissionError(String toMail, String newSubject, String text)
-      {
-          // Simula errores de transmisión
-          text = text.replace("a", "#&");
-          text = text.replace("e", "$#");
-          // Crea el email con los parametros introducidos y el user como emisor
+
+    /**
+     * Envia al servidor un mensaje con errores por problemas de transmisión
+     */ 
+
+    public void sendMailItemWithTransmissionError(String toMail, String newSubject, String text)
+    {
+        // Cuenta la longitud del mensaje
+        int originalLength = text.length();
+        // Simula errores de transmisión
+        text = text.replace("a", "#&");
+        text = text.replace("e", "$#");
+        // Crea el email con los parametros introducidos y el user como emisor
         MailItem email = new MailItem(user, toMail, newSubject, text);
-        // Envia el mensaje al servidor
+        // Envia el mensaje al servidor y suma a la cuenta de emails enviados
         sendMailCount = sendMailCount + 1;
-        server.post(email);
+        server.post(email, originalLength);
     }
-    
+
+    /**
+     * Metodo para comprobar si un email es o no spam
+     */
+    private void checkSpam()
+    {
+        // Guarda el texto del mensaje para comprobar si hay palabras de spam
+        String tempString = lastEmail.getMessage() + " " + lastEmail.getSubject();
+        // Comprueba si es spam y guarda el resultado en un booleano
+        if (tempString.contains("viagra"))
+        {
+            if (tempString.contains("proyecto"))
+            {
+                mailIsSpam = false;
+            }
+            else
+            {
+                mailIsSpam = true;
+            }
+        }
+        if (tempString.contains("oferta"))
+        {
+            if (tempString.contains("proyecto"))
+            {
+                mailIsSpam = false;
+            }
+            else
+            {
+                mailIsSpam = true;
+            }
+
+        }
+    }
 }
