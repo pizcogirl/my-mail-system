@@ -61,9 +61,7 @@ public class MailClient
             // Suma uno al contador de mensajes recibidos
             receivedMailCount = receivedMailCount + 1;
             // Comprueba si el mensaje es spam
-            checkSpam();
-
-            if (mailIsSpam)
+            if (checkSpamMail(lastEmail))
             {
                 // Si el mensaje es spam nos devolvera null, suma uno a la estadistica
                 // de email de spam recibidos y lo guarda como spam
@@ -89,8 +87,7 @@ public class MailClient
             // Comprueba si es el mensaje más largo recibido
             checkFrom();
             // Comprueba si el mensaje es spam
-            checkSpam();
-            if (mailIsSpam)
+            if (checkSpamMail(lastEmail))
             {
                 // Si el mensaje es spam nos avisa de ello, suma uno a la estadistica
                 // de email de spam recibidos, lo guarda como spam y lo borra de lastEmail
@@ -100,7 +97,6 @@ public class MailClient
                 lastEmail = null;
             }
 
-       
             else
             {
                 lastEmail.printEmail();
@@ -182,7 +178,7 @@ public class MailClient
     {
         // Imprime por pantalla todas las estadisticas
         System.out.println ("Ha recibido " + receivedMailCount + " mensajes");
-        System.out.println ("De los cuales " + ((receivedSpamCount/receivedMailCount)*100) + "% eran spam");
+        System.out.println ("De los cuales " + ((receivedSpamCount*100)/receivedMailCount) + "% eran spam");
         System.out.println ("Ha enviado " + sendMailCount + " mensajes");
         System.out.println ("La direccion de la persona que nos envio el mensaje más largo es " + longestFrom);
     }
@@ -241,36 +237,60 @@ public class MailClient
         server.post(email, originalLength);
     }
 
-    /**
-     * Metodo para comprobar si un email es o no spam
-     */
-    private void checkSpam()
+    private boolean checkSpamMail(MailItem mail)
     {
         // Guarda el texto del mensaje para comprobar si hay palabras de spam
-        String tempString = lastEmail.getMessage() + " " + lastEmail.getSubject();
-        // Comprueba si es spam y guarda el resultado en un booleano
-        if (tempString.contains("viagra"))
+        String tempString = mail.getMessage() + " " + mail.getSubject();
+        if (tempString.contains("proyecto"))
         {
-            if (tempString.contains("proyecto"))
-            {
-                mailIsSpam = false;
-            }
-            else
-            {
-                mailIsSpam = true;
-            }
+            return false;
         }
-        if (tempString.contains("oferta"))
+        else
         {
-            if (tempString.contains("proyecto"))
+            if (tempString.contains("oferta") || tempString.contains("viagra"))
             {
-                mailIsSpam = false;
+                return true;
             }
-            else
-            {
-                mailIsSpam = true;
-            }
-
+            return false;
         }
     }
+    //     /**
+//      * Metodo para comprobar si un email es o no spam
+//      */
+//     private void checkSpam()
+//     {
+//         // Guarda el texto del mensaje para comprobar si hay palabras de spam
+//         String tempString = lastEmail.getMessage() + " " + lastEmail.getSubject();
+//         // Comprueba si es spam y guarda el resultado en un booleano
+//         if (tempString.contains("viagra"))
+//         {
+//             if (tempString.contains("proyecto"))
+//             {
+//                 mailIsSpam = false;
+//             }
+//             else
+//             {
+//                 mailIsSpam = true;
+//             }
+//         }
+//         else
+//         {
+//             mailIsSpam = false;
+//         }
+//         if (tempString.contains("oferta"))
+//         {
+//             if (tempString.contains("proyecto"))
+//             {
+//                 mailIsSpam = false;
+//             }
+//             else
+//             {
+//                 mailIsSpam = true;
+//             }
+//         }
+//         else
+//         {
+//             mailIsSpam = false;
+//         }
+//     }
 }
